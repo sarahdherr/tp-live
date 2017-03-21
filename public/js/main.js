@@ -68,19 +68,34 @@ $(function initializeMap () {
   drawMarker('activity', [40.716291, -73.995315]);
 
 
-console.log($('select'));
-
   $("select").each(function(index, select) {
     if (index === 0) {
-      console.log(hotels);
       hotels.forEach(function(hotel) {
-
         $(select).append(`<option>` + hotel.name + `</option>`);
+      }, select)
+    }
+    if (index === 1) {
+      restaurants.forEach(function(restaurant) {
+        $(select).append(`<option>` + restaurant.name + `</option>`);
+      }, select)
+    }
+    if (index === 2) {
+      activities.forEach(function(activity) {
+        $(select).append(`<option>` + activity.name + `</option>`);
       }, select)
     }
   });
 
+  $("#hotel-add").on("click", function() {
+    var selected = $("select")[0].selectedIndex;
+    var hotelName = $("select")[0].options[selected].text;
+    var theSpan = $("<span class='title'></span>").text(hotelName);
+    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
+    $(".itinerary-item")[0].append(theSpan[0]); 
+    $(".itinerary-item")[0].append(theButton[0]);
+  })
 
+  
 
 });
 
