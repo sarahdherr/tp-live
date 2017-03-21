@@ -42,18 +42,30 @@ $(function initializeMap () {
 
   const mapCanvas = document.getElementById('map-canvas');
 
-  const currentMap = new google.maps.Map(mapCanvas, {
+  function makeNewMap(location) {
+    var center = new google.maps.LatLng(location[0], location[1]);
+    currentMap = new google.maps.Map(mapCanvas, {
+      center: center,
+      zoom: 13,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      styles: styleArr
+    });
+  }
+
+  var currentMap = new google.maps.Map(mapCanvas, {
     center: fullstackAcademy,
     zoom: 13,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     styles: styleArr
   });
 
-  // const iconURLs = {
-  //   hotel: '/images/lodging_0star.png',
-  //   restaurant: '/images/restaurant.png',
-  //   activity: '/images/star-3.png'
-  // };
+  const iconURLs = {
+    hotel: '/images/lodging_0star.png',
+    restaurant: '/images/restaurant.png',
+    activity: '/images/star-3.png'
+  };
+
+  var markerArray = [];
 
   function drawMarker (type, coords) {
     const latLng = new google.maps.LatLng(coords[0], coords[1]);
@@ -61,11 +73,10 @@ $(function initializeMap () {
       position: latLng
     });
     marker.setMap(currentMap);
+    markerArray.push(marker); // SS HYPOTHESIS TO SAVE / REMOVE MARKERS
   }
 
-  drawMarker('hotel', [40.705137, -74.007624]);
-  drawMarker('restaurant', [40.705137, -74.013940]);
-  drawMarker('activity', [40.716291, -73.995315]);
+ //marker.setMap(null);
 
 
   $("select").each(function(index, select) {
@@ -91,11 +102,38 @@ $(function initializeMap () {
     var hotelName = $("select")[0].options[selected].text;
     var theSpan = $("<span class='title'></span>").text(hotelName);
     var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
-    $(".itinerary-item")[0].append(theSpan[0]); 
+    $(".itinerary-item")[0].append(theSpan[0]);
     $(".itinerary-item")[0].append(theButton[0]);
+
+    var location = places[hotels[selected].placeId].location;
+    makeNewMap(location);
+    drawMarker('hotel', location);
+
+    console.log(markerArray);
+
+  });
+
+  $("#restaurants-add").on("click", function() {
+    var selected = $("select")[1].selectedIndex;
+    var restaurantsName = $("select")[1].options[selected].text;
+    var theSpan = $("<span class='title'></span>").text(restaurantsName);
+    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
+    $(".itinerary-item")[1].append(theSpan[0]);
+    $(".itinerary-item")[1].append(theButton[0]);
+
+    drawMarker('restaurant', places[restaurants[selected].placeId].location);
   })
 
-  
+  $("#activities-add").on("click", function() {
+    var selected = $("select")[2].selectedIndex;
+    var activitiesName = $("select")[2].options[selected].text;
+    var theSpan = $("<span class='title'></span>").text(activitiesName);
+    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
+    $(".itinerary-item")[2].append(theSpan[0]);
+    $(".itinerary-item")[2].append(theButton[0]);
+
+    drawMarker('activity', places[activities[selected].placeId].location);
+  })
 
 });
 
