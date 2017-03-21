@@ -15,7 +15,7 @@
         <div class="panel-body" id="options-panel">
           <div>
             <h4>Hotels</h4>
-            <select data-type="hotels"> 
+            <select data-type="hotels">
         			<!-- {% for hotel in hotels %}
         			 <option>{{ hotel.name }}</option>
         			{% endfor %} -->
@@ -95,14 +95,6 @@
   var hotels = {{ hotels | dump | safe }};
   var restaurants = {{ restaurants | dump | safe }};
   var activities = {{ activities | dump | safe }};
-
-  $("select").each(function(index, elem) {
-    if (index === 0) {
-      for (var i = 0; i < hotels.length; i++) {
-        
-      }
-    }
-  })
 </script>
 
 {% endblock %}

@@ -27,12 +27,12 @@ $(function initializeMap () {
       featureType: 'road.highway',
       elementType: 'geometry.fill',
       stylers: [{ color: '#ef8c25' }, { lightness: 40 }]
-    }, 
+    },
     {
       featureType: 'road.highway',
       elementType: 'geometry.stroke',
       stylers: [{ visibility: 'off' }]
-    }, 
+    },
     {
       featureType: 'poi.park',
       elementType: 'geometry.fill',
@@ -67,4 +67,23 @@ $(function initializeMap () {
   drawMarker('restaurant', [40.705137, -74.013940]);
   drawMarker('activity', [40.716291, -73.995315]);
 
+
+console.log($('select'));
+
+  $("select").each(function(index, select) {
+    if (index === 0) {
+      console.log(hotels);
+      hotels.forEach(function(hotel) {
+
+        $(select).append(`<option>` + hotel.name + `</option>`);
+      }, select)
+    }
+  });
+
+
+
 });
+
+
+
+
