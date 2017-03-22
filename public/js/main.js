@@ -42,16 +42,6 @@ $(function initializeMap () {
 
   const mapCanvas = document.getElementById('map-canvas');
 
-  // function makeNewMap(location) {
-  //   var center = new google.maps.LatLng(location[0], location[1]);
-  //   currentMap = new google.maps.Map(mapCanvas, {
-  //     center: center,
-  //     zoom: 13,
-  //     mapTypeId: google.maps.MapTypeId.ROADMAP,
-  //     styles: styleArr
-  //   });
-  // }
-
   var currentMap = new google.maps.Map(mapCanvas, {
     center: fullstackAcademy,
     zoom: 13,
@@ -60,9 +50,9 @@ $(function initializeMap () {
   });
 
   const iconURLs = {
-    hotel: '/images/lodging_0star.png',
-    restaurant: '/images/restaurant.png',
-    activity: '/images/star-3.png'
+    hotel: 'https://cdn3.iconfinder.com/data/icons/map/500/hotel-32.png',
+    restaurant: 'https://cdn3.iconfinder.com/data/icons/map/500/restaurant-32.png',
+    activity: 'https://cdn3.iconfinder.com/data/icons/map/500/favorite-32.png'
   };
 
   var markerArray = [];
@@ -70,82 +60,68 @@ $(function initializeMap () {
   function drawMarker (type, coords) {
     const latLng = new google.maps.LatLng(coords[0], coords[1]);
     const marker = new google.maps.Marker({
-      position: latLng
+      position: latLng,
+      icon: iconURLs[type]
     });
     marker.setMap(currentMap);
+    // console.log("marker info", marker, typeof marker);
     markerArray.push(marker); // SS HYPOTHESIS TO SAVE / REMOVE MARKERS
+    return marker;
+    // jQuery.data(button, "marker", marker);
+    // console.log(button);
   }
 
  //marker.setMap(null);
- var bounds = new google.maps.LatLngBounds();
+    
 
+  // add all hotel, restaurant and activity to options under the first 3 selects
   $("select").each(function(index, select) {
-    if (index === 0) {
-      hotels.forEach(function(hotel) {
-        $(select).append(`<option>` + hotel.name + `</option>`);
-      }, select)
-    }
-    if (index === 1) {
-      restaurants.forEach(function(restaurant) {
-        $(select).append(`<option>` + restaurant.name + `</option>`);
-      }, select)
-    }
-    if (index === 2) {
-      activities.forEach(function(activity) {
-        $(select).append(`<option>` + activity.name + `</option>`);
-      }, select)
-    }
+    if (index === 0) hotels.forEach((hotel) => $(select).append(`<option>` + hotel.name + `</option>`));
+    
+    if (index === 1) restaurants.forEach((restaurant) => $(select).append(`<option>` + restaurant.name + `</option>`));
+    
+    if (index === 2) activities.forEach((activity) => $(select).append(`<option>` + activity.name + `</option>`));
   });
 
+  // helper function to add h/r/a to itinerary andrecenter map
+  var bounds = new google.maps.LatLngBounds();
+  function addToItinerary(index, arrName, markerType) { 
+    var selected = $("select")[index].selectedIndex;
+    var newName = $("select")[index].options[selected].text;
+    var theSpan = $("<span class='title'></span>").text(newName);
+    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
+    $(".itinerary-item")[index].append(theSpan[0]);
+    $(".itinerary-item")[index].append(theButton[0]);
+
+    var location = places[arrName[selected].placeId].location;
+    theButton[0].marker = drawMarker(markerType, location);
+    bounds.extend(new google.maps.LatLng(location[0], location[1]));
+    currentMap.fitBounds(bounds);
+  }
+
+  // add hotels to itinerary when '+' clicked
   $("#hotel-add").on("click", function() {
-    var selected = $("select")[0].selectedIndex;
-    var hotelName = $("select")[0].options[selected].text;
-    var theSpan = $("<span class='title'></span>").text(hotelName);
-    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
-    $(".itinerary-item")[0].append(theSpan[0]);
-    $(".itinerary-item")[0].append(theButton[0]);
-
-    var location = places[hotels[selected].placeId].location;
-    drawMarker('hotel', location);
-    var latLngObj = new google.maps.LatLng(location[0], location[1]);
-    bounds.extend(latLngObj);
-    currentMap.fitBounds(bounds);
+    addToItinerary(0, hotels, "hotel");
   });
 
+  // add restaurants to itinerary when '+' clicked
   $("#restaurants-add").on("click", function() {
-    var selected = $("select")[1].selectedIndex;
-    var restaurantsName = $("select")[1].options[selected].text;
-    var theSpan = $("<span class='title'></span>").text(restaurantsName);
-    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
-    $(".itinerary-item")[1].append(theSpan[0]);
-    $(".itinerary-item")[1].append(theButton[0]);
-
-    var location = places[restaurants[selected].placeId].location;
-    drawMarker('restaurant', location);
-    var latLngObj = new google.maps.LatLng(location[0], location[1]);
-    bounds.extend(latLngObj);
-    currentMap.fitBounds(bounds);
+    addToItinerary(1, restaurants, "restaurant");
   })
 
+  // add activities to itinerary when '+' clicked
   $("#activities-add").on("click", function() {
-    var selected = $("select")[2].selectedIndex;
-    var activitiesName = $("select")[2].options[selected].text;
-    var theSpan = $("<span class='title'></span>").text(activitiesName);
-    var theButton = $("<button class='btn btn-xs btn-danger remove btn-circle'></button>").text("x");
-    $(".itinerary-item")[2].append(theSpan[0]);
-    $(".itinerary-item")[2].append(theButton[0]);
-
-    var location = places[activities[selected].placeId].location;
-    drawMarker('activity', location);
-    var latLngObj = new google.maps.LatLng(location[0], location[1]);
-    bounds.extend(latLngObj);
-    currentMap.fitBounds(bounds);
+    addToItinerary(2, activities, "activity");
   })
 
-  
+  $(".itinerary-item").on("click", ".remove", function() {
+    var button = $("event").prevObject[0].activeElement
+    // remove marker
+    button.marker.setMap(null);
+    // remove span
+    $(button).prev().remove();
+    // remove button
+    button.remove();
+  })
 
 });
-
-
-
-
