@@ -72,20 +72,20 @@ $(function initializeMap () {
   }
 
  //marker.setMap(null);
-    
+
 
   // add all hotel, restaurant and activity to options under the first 3 selects
   $("select").each(function(index, select) {
     if (index === 0) hotels.forEach((hotel) => $(select).append(`<option>` + hotel.name + `</option>`));
-    
+
     if (index === 1) restaurants.forEach((restaurant) => $(select).append(`<option>` + restaurant.name + `</option>`));
-    
+
     if (index === 2) activities.forEach((activity) => $(select).append(`<option>` + activity.name + `</option>`));
   });
 
   // helper function to add h/r/a to itinerary andrecenter map
   var bounds = new google.maps.LatLngBounds();
-  function addToItinerary(index, arrName, markerType) { 
+  function addToItinerary(index, arrName, markerType) {
     var selected = $("select")[index].selectedIndex;
     var newName = $("select")[index].options[selected].text;
     var theSpan = $("<span class='title'></span>").text(newName);
@@ -107,21 +107,32 @@ $(function initializeMap () {
   // add restaurants to itinerary when '+' clicked
   $("#restaurants-add").on("click", function() {
     addToItinerary(1, restaurants, "restaurant");
-  })
+  });
 
   // add activities to itinerary when '+' clicked
   $("#activities-add").on("click", function() {
     addToItinerary(2, activities, "activity");
-  })
+  });
 
   $(".itinerary-item").on("click", ".remove", function() {
-    var button = $("event").prevObject[0].activeElement
+    var button = $("event").prevObject[0].activeElement;
     // remove marker
     button.marker.setMap(null);
     // remove span
     $(button).prev().remove();
     // remove button
     button.remove();
-  })
+  });
+
+var nextDay = 2;
+
+  $("#day-add").on('click', function() {
+    var newButton = $("<button class='btn btn-circle day-btn'></button>").text(nextDay); // didn't add the class current-day to btn
+    nextDay++;
+    $("#day-add").before(newButton);
+
+
+  });
+
 
 });
