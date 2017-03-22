@@ -40,7 +40,7 @@ $(function initializeMap () {
     }
   ];
 
-  const mapCanvas = document.getElementById('map-canvas');
+  var mapCanvas = document.getElementById('map-canvas-1');
 
   var currentMap = new google.maps.Map(mapCanvas, {
     center: fullstackAcademy,
@@ -48,6 +48,19 @@ $(function initializeMap () {
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     styles: styleArr
   });
+
+var makeMap = function(htmlId) {
+
+  var mapCanvas = document.getElementById(htmlId);
+
+  var thisMap = new google.maps.Map(mapCanvas, {
+    center: fullstackAcademy,
+    zoom: 13,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    styles: styleArr
+  });
+
+};
 
   const iconURLs = {
     hotel: 'https://cdn3.iconfinder.com/data/icons/map/500/hotel-32.png',
@@ -128,9 +141,16 @@ var nextDay = 2;
 
   $("#day-add").on('click', function() {
     var newButton = $("<button class='btn btn-circle day-btn'></button>").text(nextDay); // didn't add the class current-day to btn
-    nextDay++;
-    $("#day-add").before(newButton);
 
+    $("#day-add").before(newButton);
+    // make a new map html element -- set to invisible (CSS)
+    // make a new map to put in the html element
+    var newMapDiv = $("<div visibility='visible' class='map-canvas' id='map-canvas-" + nextDay + "'></div>");
+    $("#map-canvas").after(newMapDiv);
+
+
+
+    nextDay++;
 
   });
 
